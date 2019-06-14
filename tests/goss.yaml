@@ -1,0 +1,29 @@
+
+
+package:
+  bash:
+    installed: true
+  git:
+    installed: true
+  make:
+    installed: true
+
+command:
+  docker-version:
+    exit-status: 0
+    exec: "docker --version"
+    stdout:
+    - "Docker version"
+  dockerd-version:
+    exit-status: 0
+    exec: "dockerd --version"
+    stdout:
+    - "Docker version"
+  docker-compose-version:
+    exit-status: 0
+    exec: "docker-compose version"
+    stdout:
+    - "docker-compose version"
+    - "docker-py version"
+    - "CPython version"
+    - "OpenSSL version"

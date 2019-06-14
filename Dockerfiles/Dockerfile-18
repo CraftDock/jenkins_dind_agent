@@ -1,11 +1,12 @@
-#
-# Jenkins docker in docker agent for craftdock/jenkins
-#
 FROM docker:18-dind
 
 LABEL maintainer="Hexosse <hexosse@gmail.com>" \
-      description="Minimal Alpine image used as a base image."
+      description="Jenkins docker in docker agent for dsuite/jenkins." \
+      vendor="docker-suite" \
+      license="MIT"
 
+
+## Install alpine-base
 RUN \
 	# Print executed commands
 	set -x \
@@ -15,10 +16,13 @@ RUN \
     && apk add curl \
     && curl -s -o /tmp/install-base.sh https://raw.githubusercontent.com/craftdock/Install-Scripts/master/alpine-base/install-base.sh \
     && sh /tmp/install-base.sh \
+    && rm -f /entrypoint.sh \
 	# Clear apk's cache
 	&& apk-cleanup
 
-RUN \    
+
+## Install packages
+RUN \
     # Add tools commonly used
     apk-install --repository http://dl-cdn.alpinelinux.org/alpine/edge/community/ --repository http://dl-cdn.alpinelinux.org/alpine/main/community/ \
         bash \
@@ -31,7 +35,7 @@ RUN \
         make \
         openjdk8 \
         openssh-client \
-        openssl \
+        make \
         sudo \
         tar \
         unzip \
@@ -41,7 +45,9 @@ RUN \
 	# Clear apk's cache
 	&& apk-cleanup
 
-RUN \    
+
+## Install docker-compose
+RUN \
     # Add docker-compose
     apk-install --repository http://dl-cdn.alpinelinux.org/alpine/edge/community/ --repository http://dl-cdn.alpinelinux.org/alpine/main/community/ \
         py-pip python-dev libffi-dev openssl-dev libc-dev \
@@ -49,3 +55,8 @@ RUN \
     && pip install docker-compose \
 	# Clear apk's cache
 	&& apk-cleanup
+
+
+## Entrypoint
+ENTRYPOINT ["dockerd-entrypoint.sh"]
+CMD []
