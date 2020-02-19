@@ -1,6 +1,7 @@
 ## Name of the image
 DOCKER_IMAGE=dsuite/jenkins_dind_agent
-DIR:=$(strip $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST)))))
+DOCKER_IMAGE_CREATED=$(shell date -u +'%Y-%m-%dT%H:%M:%SZ')
+DOCKER_IMAGE_REVISION=$(shell git rev-parse --short HEAD)
 
 ## Current directory
 DIR:=$(strip $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST)))))
@@ -58,12 +59,15 @@ build-version:
 		-e http_proxy=${http_proxy} \
 		-e https_proxy=${https_proxy} \
 		-e DIND_VERSION=$(version) \
+		-e DOCKER_IMAGE_CREATED=$(DOCKER_IMAGE_CREATED) \
+		-e DOCKER_IMAGE_REVISION=$(DOCKER_IMAGE_REVISION) \
 		-v $(DIR)/Dockerfiles:/data \
 		dsuite/alpine-data \
 		sh -c "templater Dockerfile.template > Dockerfile-$(version)"
 	@docker build \
 		--build-arg http_proxy=${http_proxy} \
 		--build-arg https_proxy=${https_proxy} \
+		--build-arg GH_TOKEN=${GH_TOKEN} \
 		--file $(DIR)/Dockerfiles/Dockerfile-$(version) \
 		--tag $(DOCKER_IMAGE):$(version) \
 		$(DIR)/Dockerfiles

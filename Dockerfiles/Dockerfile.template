@@ -1,9 +1,20 @@
 FROM docker:{{DIND_VERSION}}-dind
 
+
 LABEL maintainer="Hexosse <hexosse@gmail.com>" \
-      description="Jenkins docker in docker agent for dsuite/jenkins." \
-      vendor="docker-suite" \
-      license="MIT"
+    org.opencontainers.image.title="docker-suite dsuite/jenkins_dind_agent:{{DIND_VERSION}} image" \
+    org.opencontainers.image.description="Jenkins docker in docker agent for dsuite/jenkins" \
+    org.opencontainers.image.authors="Hexosse <hexosse@gmail.com>" \
+    org.opencontainers.image.vendor="docker-suite" \
+    org.opencontainers.image.licenses="MIT" \
+    org.opencontainers.image.url="https://github.com/docker-suite/jenkins_dind_agent" \
+    org.opencontainers.image.source="https://github.com/docker-suite/jenkins_dind_agent" \
+    org.opencontainers.image.documentation="https://github.com/docker-suite/jenkins_dind_agent/blob/master/Readme.md" \
+    org.opencontainers.image.created="{{DOCKER_IMAGE_CREATED}}" \
+    org.opencontainers.image.revision="{{DOCKER_IMAGE_REVISION}}"
+
+# Github token
+ARG GH_TOKEN
 
 
 ## Install alpine-base
