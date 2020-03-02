@@ -1,5 +1,6 @@
-FROM docker:{{DIND_VERSION}}-dind
+FROM docker/compose:alpine-1.25.4 as compose
 
+FROM docker:{{DIND_VERSION}}-dind
 
 LABEL maintainer="Hexosse <hexosse@gmail.com>" \
     org.opencontainers.image.title="docker-suite dsuite/jenkins_dind_agent:{{DIND_VERSION}} image" \
@@ -25,7 +26,7 @@ RUN \
     && apk update \
     # Download the install-base script and run it
     && apk add curl \
-    && curl -s -o /tmp/install-base.sh https://raw.githubusercontent.com/craftdock/Install-Scripts/master/alpine-base/install-base.sh \
+    && curl -s -o /tmp/install-base.sh https://raw.githubusercontent.com/docker-suite/Install-Scripts/master/alpine-base/install-base.sh \
     && sh /tmp/install-base.sh \
     && rm -f /entrypoint.sh \
 	# Clear apk's cache
@@ -34,12 +35,16 @@ RUN \
 
 ## Install packages
 RUN \
+	# Print executed commands
+	set -x \
+    # Update repository indexes
+    && apk update \
     # Add tools commonly used
-    apk-install --repository http://dl-cdn.alpinelinux.org/alpine/edge/community/ --repository http://dl-cdn.alpinelinux.org/alpine/main/community/ \
+    && apk-install --repository http://dl-cdn.alpinelinux.org/alpine/edge/community/  --repository http://dl-cdn.alpinelinux.org/alpine/edge/main/ \
         bash \
         bzip2 \
         ca-certificates \
-        docker-bash-completion>=18.03.1 \
+        docker-bash-completion \
         g++ \
         gcc \
         git \
@@ -58,15 +63,8 @@ RUN \
 
 
 ## Install docker-compose
-RUN \
-    # Add docker-compose
-    apk-install --repository http://dl-cdn.alpinelinux.org/alpine/edge/community/ --repository http://dl-cdn.alpinelinux.org/alpine/main/community/ \
-        py-pip python-dev libffi-dev openssl-dev libc-dev \
-    && pip install --upgrade pip \
-    && pip install docker-compose \
-	# Clear apk's cache
-	&& apk-cleanup
-
+COPY --from=compose /usr/local/bin/docker-compose /usr/local/bin/docker-compose
+RUN chmod +x /usr/local/bin/docker-compose
 
 ## Entrypoint
 ENTRYPOINT ["dockerd-entrypoint.sh"]

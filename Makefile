@@ -29,7 +29,7 @@ push: ## Push all versions
 	$(MAKE) push-version v=18
 	$(MAKE) push-version v=19
 
-shell: ## Run shell ( usage : make shell v="3.10" )
+shell: ## Run shell ( usage : make shell v="19" )
 	$(eval version := $(or $(v),$(latest)))
 	@$(MAKE) build-version v=$(version)
 	@docker run -it --rm \
